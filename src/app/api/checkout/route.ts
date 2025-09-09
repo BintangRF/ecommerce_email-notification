@@ -54,6 +54,8 @@ export async function POST(req: Request) {
         error: "/payment-notification",
         pending: "/payment-notification",
       },
+      custom_field1: body.email,
+      custom_field2: JSON.stringify(item_details),
       finish_redirect_url: "/payment-notification",
       pending_redirect_url: "/payment-notification",
       error_redirect_url: "/payment-notification",

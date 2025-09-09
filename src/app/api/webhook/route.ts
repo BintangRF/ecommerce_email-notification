@@ -9,9 +9,18 @@ export async function POST(req: NextRequest) {
     transaction_status,
     gross_amount,
     payment_type,
-    customer_details,
-    item_details,
+    custom_field1,
+    custom_field2,
   } = body;
+
+  let item_details: any[] = [];
+  try {
+    if (custom_field2) {
+      item_details = JSON.parse(custom_field2);
+    }
+  } catch (err) {
+    console.error("Failed to parse custom_field2:", err);
+  }
 
   try {
     const transporter = nodemailer.createTransport({
@@ -55,13 +64,13 @@ export async function POST(req: NextRequest) {
 
     // email ke penjual
     await transporter.sendMail({
-      from: customer_details.email,
+      from: custom_field1,
       to: process.env.GMAIL_ACCOUNT,
       subject: `Pesanan Baru #${order_id}`,
       text: `Ada Pesanan baru. \n\nStatus: ${transaction_status}\nTotal: Rp ${gross_amount}\n\nDaftar Item:\n${itemText}`,
     });
 
-    let buyerMessage = `Halo ${customer_details.first_name},\n\n`;
+    let buyerMessage = `Halo ${custom_field1},\n\n`;
     if (transaction_status === "pending") {
       buyerMessage += `Pesanan kamu sedang menunggu pembayaran.\n${paymentInfo}\n\nTotal: Rp${gross_amount}\n`;
     } else if (transaction_status === "settlement") {
@@ -76,7 +85,7 @@ export async function POST(req: NextRequest) {
     // email ke pembeli
     await transporter.sendMail({
       from: process.env.GMAIL_ACCOUNT,
-      to: customer_details.email,
+      to: custom_field1,
       subject: `Status Pesanan #${order_id}`,
       text:
         buyerMessage +
