@@ -29,7 +29,7 @@ export const CartItem = ({ id, name, price, quantity }: Props) => {
     <li className="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/10">
       <div className="flex-1">
         <p className="line-clamp-1">{name}</p>
-        <p className="opacity-70 text-sm">Rp. {price}</p>
+        <p className="opacity-70 text-sm">Rp. {price.toLocaleString()}</p>
       </div>
 
       <div className="flex items-center gap-2">

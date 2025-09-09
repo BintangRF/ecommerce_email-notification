@@ -47,7 +47,9 @@ export const CartSummary = ({ total }: Props) => {
       {/* Total */}
       <div className="flex items-center justify-between border-t border-white/10 pt-4">
         <span className="text-lg">Total</span>
-        <span className="text-xl font-semibold">Rp. {total.toFixed(2)}</span>
+        <span className="text-xl font-semibold">
+          Rp. {total.toLocaleString()}
+        </span>
       </div>
 
       <button

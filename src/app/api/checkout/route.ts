@@ -5,6 +5,7 @@ import items from "@/data/items.json";
 
 export async function POST(req: Request) {
   try {
+    const link = process.env.BASE_URL;
     const body = await req.json();
 
     // hitung total
@@ -50,17 +51,15 @@ export async function POST(req: Request) {
         email: body.email,
       },
       callbacks: {
-        finish: `/payment-notification`,
-        error: `/payment-notification`,
-        pending: `/payment-notification`,
+        finish: `${link}/payment-notification`,
+        error: `${link}/payment-notification`,
+        pending: `${link}/payment-notification`,
       },
       custom_field1: body.email,
       custom_field2: body.username,
       custom_field3: JSON.stringify(item_details),
-      finish_redirect_url: `/payment-notification`,
-      pending_redirect_url: `/payment-notification`,
-      error_redirect_url: `/payment-notification`,
-    } as any;
+      finish_redirect_url: `${link}/payment-notification`,
+    };
 
     const transaction = await snap.createTransaction(parameter);
 
