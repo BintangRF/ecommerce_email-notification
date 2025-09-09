@@ -27,6 +27,7 @@ export function usePayment() {
       // ✅ Jika pembayaran sukses
       onSuccess: () => {
         clearCart(); // kosongkan keranjang setelah berhasil
+        window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}/payment-notification?order_id=${orderId}&status=settlement`;
       },
       // 🕒 Jika masih menunggu pembayaran (pending)
       onPending: () => {
@@ -34,10 +35,12 @@ export function usePayment() {
           setCurrentPayment(null);
           clearCart();
         }
+        window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}/payment-notification?order_id=${orderId}&status=pending`;
       },
       // ❌ Jika gagal/error
       onError: () => {
         setCurrentPayment(null);
+        window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}/payment-notification?order_id=${orderId}&status=failure`;
       },
       // ⚠️ Jika user menutup popup tanpa bayar
       onClose: () => {
