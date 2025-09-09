@@ -23,36 +23,28 @@ export function usePayment() {
     // Pastikan Snap JS tersedia
 
     // Buka popup Snap Payment
-    window.snap.pay(
-      snapToken,
-      {
-        // ✅ Jika pembayaran sukses
-        onSuccess: () => {
-          clearCart(); // kosongkan keranjang setelah berhasil
-        },
-        // 🕒 Jika masih menunggu pembayaran (pending)
-        onPending: () => {
-          if (currentPayment) {
-            setCurrentPayment(null);
-            clearCart();
-          }
-        },
-        // ❌ Jika gagal/error
-        onError: () => {
-          setCurrentPayment(null);
-        },
-        // ⚠️ Jika user menutup popup tanpa bayar
-        onClose: () => {
-          console.log("Snap modal ditutup, token tetap ada");
-          setCurrentPayment(null);
-        },
-        finishRedirectUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/payment-notification`,
+    window.snap.pay(snapToken, {
+      // ✅ Jika pembayaran sukses
+      onSuccess: () => {
+        clearCart(); // kosongkan keranjang setelah berhasil
       },
-      {
-        skipOrderSummary: true,
-        autoClose: true,
-      }
-    );
+      // 🕒 Jika masih menunggu pembayaran (pending)
+      onPending: () => {
+        if (currentPayment) {
+          setCurrentPayment(null);
+          clearCart();
+        }
+      },
+      // ❌ Jika gagal/error
+      onError: () => {
+        setCurrentPayment(null);
+      },
+      // ⚠️ Jika user menutup popup tanpa bayar
+      onClose: () => {
+        console.log("Snap modal ditutup, token tetap ada");
+        setCurrentPayment(null);
+      },
+    });
   };
 
   /**
