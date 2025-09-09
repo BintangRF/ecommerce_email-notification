@@ -11,15 +11,16 @@ export async function POST(req: NextRequest) {
     payment_type,
     custom_field1,
     custom_field2,
+    custom_field3,
   } = body;
 
   let item_details: any[] = [];
   try {
-    if (custom_field2) {
-      item_details = JSON.parse(custom_field2);
+    if (custom_field3) {
+      item_details = JSON.parse(custom_field3);
     }
   } catch (err) {
-    console.error("Failed to parse custom_field2:", err);
+    console.error("Failed to parse custom_field3:", err);
   }
 
   try {
@@ -33,11 +34,10 @@ export async function POST(req: NextRequest) {
 
     const itemText = item_details
       .map(
-        (item: any) => `
-    - ${item.name} x ${item.quantity} @ Rp ${item.price} = Rp ${
-          item.price * item.quantity
-        }
-    `
+        (item: any) =>
+          `- ${item.name} x ${item.quantity} @ Rp ${item.price} = Rp ${
+            item.price * item.quantity
+          }`
       )
       .join("\n");
 
@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
       text: `Ada Pesanan baru. \n\nStatus: ${transaction_status}\nTotal: Rp ${gross_amount}\n\nDaftar Item:\n${itemText}`,
     });
 
-    let buyerMessage = `Halo ${custom_field1},\n\n`;
+    let buyerMessage = `Halo ${custom_field2},\n\n`;
     if (transaction_status === "pending") {
       buyerMessage += `Pesanan kamu sedang menunggu pembayaran.\n${paymentInfo}\n\nTotal: Rp${gross_amount}\n`;
     } else if (transaction_status === "settlement") {
