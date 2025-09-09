@@ -1,6 +1,20 @@
 @import "tailwindcss";
 
 @theme {
-  --color-custom-light: #fffacd;
-  --color-custom-dark: #000000;
+  /* Light & Dark utama */
+  --color-custom-light: #fdfdfd; /* putih netral */
+  --color-custom-dark: #111111; /* hampir hitam */
+
+  /* Abu-abu */
+  --color-custom-gray-lightest: #f5f5f5; /* background sekunder */
+  --color-custom-gray-light: #e0e0e0; /* border, divider */
+  --color-custom-gray-medium: #888888; /* teks sekunder */
+  --color-custom-gray-dark: #333333; /* teks utama di background terang */
+  --color-custom-gray-darkest: #1a1a1a; /* teks utama di dark mode */
+
+  /* Accent netral / monokrom modern */
+  --color-custom-accent-light: #dcdcdc; /* highlight ringan, hover background */
+  --color-custom-accent-medium: #b0b0b0; /* tombol, icon, subtle highlight */
+  --color-custom-accent-dark: #4a4a4a; /* tombol aktif, fokus, shadow */
+  --color-custom-accent-cool: #c0c8cc; /* sedikit nuansa biru/abu untuk monokrom modern */
 }

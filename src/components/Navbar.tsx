@@ -23,14 +23,14 @@ export const NavLink = ({ href, icon, label, badge }: NavLinkProps) => {
       className={clsx(
         "relative flex items-center gap-1 transition-colors",
         pathname === href
-          ? "text-green-400 font-semibold"
-          : "text-gray-300 hover:text-white"
+          ? "text-custom-gray-lightest font-bold"
+          : "text-custom-light font-semibold"
       )}
     >
       {icon}
       {label}
       {badge !== undefined && badge > 0 && (
-        <span className="absolute -top-2 -right-3 bg-green-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
+        <span className="absolute -top-2 -right-3 bg-custom-gray-dark text-custom-gray-lightest text-xs font-bold px-1.5 py-0.5 rounded-full">
           {badge}
         </span>
       )}
@@ -44,7 +44,7 @@ export const Navbar = () => {
   return (
     <Disclosure
       as="nav"
-      className="w-screen top-0 z-50 border-b border-white/10 bg-[#0e141b]/70 backdrop-blur-md"
+      className="w-screen top-0 z-50 border-b border-custom-dark/10 bg-custom-dark backdrop-blur-md"
     >
       {({ open }) => (
         <>
@@ -52,13 +52,13 @@ export const Navbar = () => {
             {/* Brand */}
             <Link
               href="/"
-              className="font-bold tracking-tight text-lg text-white hover:text-green-400 transition-colors"
+              className="font-bold tracking-tight text-lg text-custom-gray-lightest hover:text-custom-accent-medium transition-colors"
             >
               NextStore
             </Link>
 
             {/* Desktop Menu */}
-            <div className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-300">
+            <div className="hidden md:flex items-center gap-6 text-sm">
               <NavLink
                 href="/"
                 icon={<PackageSearch size={16} />}
@@ -77,7 +77,7 @@ export const Navbar = () => {
             <div className="md:hidden">
               <Disclosure.Button
                 aria-label="button-mobile"
-                className="p-2 rounded-md text-gray-300 hover:text-white hover:bg-white/10 focus:outline-none"
+                className="p-2 rounded-md text-custom-gray-light hover:bg-custom-accent-cool/10 focus:outline-none"
               >
                 {open ? <X size={22} /> : <Menu size={22} />}
               </Disclosure.Button>
@@ -85,25 +85,19 @@ export const Navbar = () => {
           </div>
 
           {/* Mobile Menu */}
-          <Disclosure.Panel className="md:hidden px-4 pb-4 space-y-2 text-gray-300 font-medium">
-            <Link
+          <Disclosure.Panel className="md:hidden px-4 pb-4 space-y-2">
+            <NavLink
               href="/"
-              className="flex items-center gap-2 hover:text-white transition-colors"
-            >
-              <PackageSearch size={16} /> Products
-            </Link>
+              icon={<PackageSearch size={16} />}
+              label="Products"
+            />
 
-            <Link
+            <NavLink
               href="/cart"
-              className="relative flex items-center gap-2 hover:text-white transition-colors"
-            >
-              <ShoppingCart size={16} /> Cart
-              {cartCount > 0 && (
-                <span className="bg-green-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
-                  {cartCount}
-                </span>
-              )}
-            </Link>
+              icon={<ShoppingCart size={16} />}
+              label="Cart"
+              badge={cartCount}
+            />
           </Disclosure.Panel>
         </>
       )}
