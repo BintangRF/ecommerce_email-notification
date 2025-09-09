@@ -66,8 +66,9 @@ export async function POST(req: NextRequest) {
     await transporter.sendMail({
       from: custom_field1,
       to: process.env.GMAIL_ACCOUNT,
+      replyTo: custom_field1,
       subject: `Pesanan Baru #${order_id}`,
-      text: `Ada Pesanan baru. \n\nStatus: ${transaction_status}\nTotal: Rp ${gross_amount}\n\nDaftar Item:\n${itemText}`,
+      text: `Ada Pesanan baru. \n\ndari: ${custom_field1} \n\nStatus: ${transaction_status}\nTotal: Rp ${gross_amount}\n\nDaftar Item:\n${itemText}`,
     });
 
     let buyerMessage = `Halo ${custom_field2},\n\n`;
