@@ -29,6 +29,7 @@ export function usePayment() {
         // ✅ Jika pembayaran sukses
         onSuccess: () => {
           clearCart(); // kosongkan keranjang setelah berhasil
+          window.location.href = "/payment-notification";
         },
         // 🕒 Jika masih menunggu pembayaran (pending)
         onPending: () => {
@@ -36,10 +37,12 @@ export function usePayment() {
             setCurrentPayment(null);
             clearCart();
           }
+          window.location.href = "/payment-notification";
         },
         // ❌ Jika gagal/error
         onError: () => {
           setCurrentPayment(null);
+          window.location.href = "/payment-notification";
         },
         // ⚠️ Jika user menutup popup tanpa bayar
         onClose: () => {
