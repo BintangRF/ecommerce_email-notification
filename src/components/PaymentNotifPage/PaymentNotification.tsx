@@ -37,11 +37,8 @@ export default function PaymentNotification() {
     <div className="flex flex-col items-center justify-center h-screen text-center">
       <h1 className={`text-2xl font-bold mb-4 ${color}`}>{title}</h1>
       <p className="mb-6">{message}</p>
-      <Link
-        href="/transactions"
-        className="px-4 py-2 bg-blue-600 text-white rounded"
-      >
-        Lihat Transaksi
+      <Link href="/" className="px-4 py-2 bg-blue-600 text-white rounded">
+        Kembali ke Beranda
       </Link>
     </div>
   );
