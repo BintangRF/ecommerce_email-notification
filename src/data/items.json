@@ -1,0 +1,5 @@
+[
+  { "id": "SKU-01", "name": "Kaos Putih", "price": 50000 },
+  { "id": "SKU-02", "name": "Celana Jeans", "price": 100000 },
+  { "id": "SKU-03", "name": "Jaket Hoodie", "price": 150000 }
+]
