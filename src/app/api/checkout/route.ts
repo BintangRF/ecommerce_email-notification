@@ -5,7 +5,7 @@ import items from "@/data/items.json";
 
 export async function POST(req: Request) {
   try {
-    const link = process.env.BASE_URL;
+    const link = process.env.NEXT_PUBLIC_BASE_URL;
     const body = await req.json();
 
     // hitung total

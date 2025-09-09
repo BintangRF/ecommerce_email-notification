@@ -46,6 +46,7 @@ export function usePayment() {
           console.log("Snap modal ditutup, token tetap ada");
           setCurrentPayment(null);
         },
+        finishRedirectUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/payment-notification`,
       },
       {
         skipOrderSummary: true,
