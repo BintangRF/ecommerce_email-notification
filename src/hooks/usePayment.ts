@@ -4,12 +4,10 @@
 import { v4 as uuidv4 } from "uuid";
 import { useStore } from "@/store/useStore";
 import { useCheckout } from "@/hooks/useCheckout";
-import { useUpdateProduct } from "./useUpdateProduct";
 
 export function usePayment() {
   const { clearCart, cart } = useStore();
   const { mutate, isPending } = useCheckout();
-  const { mutate: updateProducts } = useUpdateProduct();
 
   /**
    * currentPayment = transaksi yang sedang berlangsung (sementara)
