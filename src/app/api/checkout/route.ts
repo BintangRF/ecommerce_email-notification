@@ -87,7 +87,7 @@ export async function POST(req: Request) {
         username: body.username,
         email: body.email,
         address: body.address,
-        products: body.items,
+        products: item_details,
       },
     };
 
