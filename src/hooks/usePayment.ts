@@ -29,7 +29,6 @@ export function usePayment() {
       // ✅ Jika pembayaran sukses
       onSuccess: () => {
         clearCart(); // kosongkan keranjang setelah berhasil
-        updateProducts({ order_id: orderId, products: cart });
         window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}/payment-notification?order_id=${orderId}&transaction_status=settlement`;
       },
       // 🕒 Jika masih menunggu pembayaran (pending)
@@ -38,13 +37,11 @@ export function usePayment() {
           setCurrentPayment(null);
           clearCart();
         }
-        updateProducts({ order_id: orderId, products: cart });
         window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}/payment-notification?order_id=${orderId}&transaction_status=pending`;
       },
       // ❌ Jika gagal/error
       onError: () => {
         setCurrentPayment(null);
-        updateProducts({ order_id: orderId, products: cart });
         window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}/payment-notification?order_id=${orderId}&transaction_status=failure`;
       },
       // ⚠️ Jika user menutup popup tanpa bayar

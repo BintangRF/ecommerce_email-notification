@@ -60,6 +60,7 @@ export async function POST(req: NextRequest) {
           username: (username ?? "").trim(),
           email: (email ?? "").trim(),
           address: (address ?? "").trim(),
+          products: JSON.stringify(products ?? []),
           gross_amount: (gross_amount ?? "").toString(),
           payment_type: payment_type ?? "",
           bank: va_numbers?.[0]?.bank ?? "",
