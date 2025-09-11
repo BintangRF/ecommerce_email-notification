@@ -12,12 +12,8 @@ export async function POST(req: NextRequest) {
     custom_field1,
     custom_field2,
     custom_field3,
+    custom_field4,
     va_numbers,
-    bill_key,
-    biller_code,
-    store,
-    payment_code,
-    actions,
   } = body;
 
   let item_details: any[] = [];
@@ -38,68 +34,36 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const itemText = item_details
-      .map(
-        (item: any) =>
-          `- ${item.name} x ${item.quantity} @ Rp ${item.price} = Rp ${
-            item.price * item.quantity
-          }`
-      )
-      .join("\n");
-
-    let paymentInfo = "";
-
-    if (transaction_status === "pending") {
-      if (payment_type === "bank_transfer") {
-        paymentInfo =
-          "Silahkan transfer ke Virtual Account berikut: \n" +
-          (va_numbers || [])
-            .map((va: any) => `Bank ${va.bank.toUpperCase()}: ${va.va_number}`)
-            .join("\n");
-      } else if (payment_type === "echannel") {
-        paymentInfo = `Kode Bill: ${bill_key} \nKode Company: ${biller_code}`;
-      } else if (payment_type === "gopay" || payment_type === "shopeepay") {
-        const deeplink = (actions || []).find(
-          (a: any) => a.name === "deeplink-redirect"
-        );
-        paymentInfo = `Lanjutkan pembayaran melalui link berikut:\n${deeplink?.url}`;
-      } else if (payment_type === "cstore") {
-        paymentInfo = `Kode pembayaran di ${store}: ${payment_code}`;
-      }
-    }
-
-    // email ke penjual
+    // --- Email ke ADMIN (selalu terkirim agar admin tahu ada transaksi baru) ---
     await transporter.sendMail({
       from: custom_field1,
       to: process.env.GMAIL_ACCOUNT,
       replyTo: custom_field1,
       subject: `Pesanan Baru #${order_id}`,
-      text: `Ada Pesanan baru. \n\ndari: ${custom_field1} \n\nStatus: ${transaction_status}\nTotal: Rp ${gross_amount}\n\nDaftar Item:\n${itemText}`,
+      text: `Ada pesanan baru dari: ${custom_field2} (${custom_field1})
+              Alamat: ${custom_field4}
+              Status: ${transaction_status}
+              Total: Rp ${gross_amount}`,
     });
 
-    let buyerMessage = `Halo ${custom_field2},\n\n`;
-    if (transaction_status === "pending") {
-      buyerMessage += `Pesanan kamu sedang menunggu pembayaran.\n${paymentInfo}\n\nTotal: Rp${gross_amount}\n`;
-    } else if (transaction_status === "settlement") {
-      buyerMessage += `Pembayaran kamu sudah BERHASIL diterima.\nPesanan segera diproses.\nTotal: Rp${gross_amount}\n`;
-    } else if (
-      transaction_status === "expire" ||
-      transaction_status === "deny"
-    ) {
-      buyerMessage += `Maaf, pembayaran kamu gagal atau sudah kedaluwarsa.\nSilakan coba lagi.\n`;
+    // --- Email ke PEMBELI (hanya ketika settlement) ---
+    if (transaction_status === "settlement") {
+      const buyerMessage =
+        `Halo ${custom_field2},\n\n` +
+        `Terima kasih! Pembayaran kamu untuk pesanan #${order_id} sudah **BERHASIL** kami terima ✅.\n\n` +
+        `Total: Rp${gross_amount}\n\n` +
+        `Pesananmu segera kami proses. Mohon ditunggu ya 🙏\n\n` +
+        `Salam hangat,\nTim Toko`;
+
+      await transporter.sendMail({
+        from: process.env.GMAIL_ACCOUNT,
+        to: custom_field1,
+        subject: `Pembayaran Berhasil - Pesanan #${order_id}`,
+        text: buyerMessage,
+      });
     }
 
-    // email ke pembeli
-    await transporter.sendMail({
-      from: process.env.GMAIL_ACCOUNT,
-      to: custom_field1,
-      subject: `Status Pesanan #${order_id}`,
-      text:
-        buyerMessage +
-        `\n\nDaftar Item:\n${itemText}\n\nTerima kasih sudah belanja!`,
-    });
-
-    // POST KE SPREADSHEET - TETAP JALANKAN
+    // --- POST ke Google Spreadsheet ---
     const scriptUrl = process.env.NEXT_PUBLIC_SPREADSHEET_SCRIPT_URL;
 
     if (scriptUrl) {
@@ -108,13 +72,15 @@ export async function POST(req: NextRequest) {
           order_id: (order_id ?? "").toString().trim(),
           username: (custom_field2 ?? "").trim(),
           email: (custom_field1 ?? "").trim(),
+          address: (custom_field4 ?? "").trim(), // alamat pengiriman
           products: JSON.stringify(item_details),
           gross_amount: (gross_amount ?? "").toString(),
           payment_type: payment_type ?? "",
+          bank: va_numbers?.[0]?.bank ?? "",
+          va_number: va_numbers?.[0]?.va_number ?? "",
           status: transaction_status ?? "",
         };
 
-        // Kirim sebagai FormData
         const formData = new FormData();
         Object.entries(postBody).forEach(([key, value]) => {
           formData.append(key, value.toString());

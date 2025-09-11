@@ -12,6 +12,7 @@ type CheckoutPayload = {
   items: ItemProps[];
   username: string;
   email: string;
+  address: string;
 };
 
 type CheckoutResponse = {

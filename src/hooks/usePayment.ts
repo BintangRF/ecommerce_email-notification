@@ -68,6 +68,7 @@ export function usePayment() {
         })),
         username: data.username,
         email: data.email,
+        address: data.address,
       },
       {
         onSuccess: (res) => {

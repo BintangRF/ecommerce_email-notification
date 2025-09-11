@@ -70,6 +70,11 @@ export async function POST(req: Request) {
       customer_details: {
         first_name: body.username,
         email: body.email,
+        shipping_address: {
+          first_name: body.username,
+          email: body.email,
+          address: body.address,
+        },
       },
       callbacks: {
         finish: `${link}/payment-notification`,
@@ -79,6 +84,7 @@ export async function POST(req: Request) {
       custom_field1: body.email,
       custom_field2: body.username,
       custom_field3: JSON.stringify(item_details),
+      custom_field4: body.address, // simpan juga alamat biar bisa dipakai di webhook
       finish_redirect_url: `${link}/payment-notification`,
     };
 

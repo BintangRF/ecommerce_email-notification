@@ -48,6 +48,15 @@ export const CartSummary = ({ total }: Props) => {
         className="bg-custom-gray-lightest border border-custom-gray-light rounded-lg px-4 py-2 focus:ring-2 focus:ring-custom-accent-cool transition-all"
       />
 
+      {/* Address */}
+      <FormInputs
+        name="address"
+        label="Alamat Pengiriman"
+        rules={{ required: "Alamat pengiriman wajib diisi" }}
+        placeholder="Masukkan alamat lengkap"
+        className="bg-custom-gray-lightest border border-custom-gray-light rounded-lg px-4 py-2 focus:ring-2 focus:ring-custom-accent-cool transition-all"
+      />
+
       {/* Total */}
       <div className="flex items-center justify-between border-t border-custom-gray-light pt-4">
         <span className="text-lg text-custom-gray-darkest font-medium">
