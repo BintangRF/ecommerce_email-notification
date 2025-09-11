@@ -95,17 +95,25 @@ export async function POST(req: NextRequest) {
 
     // Post ke Spreadsheet
     const script = process.env.NEXT_PUBLIC_SPREADSHEET_SCRIPT_URL;
-    await fetch(script!, {
+
+    const postBody = {
+      order_id,
+      username: custom_field2,
+      email: custom_field1,
+      products: custom_field3,
+      gross_amount,
+      payment_type,
+      status: transaction_status,
+    };
+
+    const res = await fetch(script!, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        username: custom_field1,
-        email: custom_field2,
-        products: custom_field3,
-        payment_type,
-        status: transaction_status,
-      }),
+      body: JSON.stringify(postBody),
     });
+
+    const text = await res.text();
+    console.log("Google Script response:", text);
 
     return NextResponse.json({ success: true });
   } catch (error) {
