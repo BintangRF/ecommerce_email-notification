@@ -70,11 +70,7 @@ export async function POST(req: Request) {
       customer_details: {
         first_name: body.username,
         email: body.email,
-        shipping_address: {
-          first_name: body.username,
-          email: body.email,
-          address: body.address,
-        },
+        address: body.address,
       },
       callbacks: {
         finish: `${link}/payment-notification`,
