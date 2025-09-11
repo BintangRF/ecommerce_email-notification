@@ -9,6 +9,7 @@ import { useUpdateProduct } from "./useUpdateProduct";
 export function usePayment() {
   const { clearCart, cart } = useStore();
   const { mutate, isPending } = useCheckout();
+  const { mutate: updateProducts } = useUpdateProduct();
 
   /**
    * currentPayment = transaksi yang sedang berlangsung (sementara)
@@ -20,7 +21,6 @@ export function usePayment() {
   const payWithSnap = (snapToken: string, orderId: string) => {
     const currentPayment = useStore.getState().currentPayment;
     const setCurrentPayment = useStore.getState().setCurrentPayment;
-    const { mutate: updateProducts } = useUpdateProduct();
 
     // Pastikan Snap JS tersedia
 
