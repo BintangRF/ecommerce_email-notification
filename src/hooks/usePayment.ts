@@ -4,6 +4,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { useStore } from "@/store/useStore";
 import { useCheckout } from "@/hooks/useCheckout";
+import { useUpdateProduct } from "./useUpdateProduct";
 
 export function usePayment() {
   const { clearCart, cart } = useStore();
@@ -19,6 +20,7 @@ export function usePayment() {
   const payWithSnap = (snapToken: string, orderId: string) => {
     const currentPayment = useStore.getState().currentPayment;
     const setCurrentPayment = useStore.getState().setCurrentPayment;
+    const { mutate: updateProducts } = useUpdateProduct();
 
     // Pastikan Snap JS tersedia
 
@@ -27,6 +29,7 @@ export function usePayment() {
       // ✅ Jika pembayaran sukses
       onSuccess: () => {
         clearCart(); // kosongkan keranjang setelah berhasil
+        updateProducts({ order_id: orderId, products: cart });
         window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}/payment-notification?order_id=${orderId}&transaction_status=settlement`;
       },
       // 🕒 Jika masih menunggu pembayaran (pending)
@@ -35,11 +38,13 @@ export function usePayment() {
           setCurrentPayment(null);
           clearCart();
         }
+        updateProducts({ order_id: orderId, products: cart });
         window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}/payment-notification?order_id=${orderId}&transaction_status=pending`;
       },
       // ❌ Jika gagal/error
       onError: () => {
         setCurrentPayment(null);
+        updateProducts({ order_id: orderId, products: cart });
         window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}/payment-notification?order_id=${orderId}&transaction_status=failure`;
       },
       // ⚠️ Jika user menutup popup tanpa bayar
