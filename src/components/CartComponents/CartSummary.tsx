@@ -68,7 +68,7 @@ export const CartSummary = ({ total }: Props) => {
           ${
             isPending
               ? "bg-custom-gray-medium cursor-not-allowed"
-              : "bg-custom-accent-dark hover:bg-custom-accent-medium"
+              : "bg-custom-dark hover:bg-custom-accent-medium"
           }
         `}
       >

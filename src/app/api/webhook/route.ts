@@ -106,22 +106,14 @@ export async function POST(req: NextRequest) {
       status: transaction_status ?? "",
     };
 
-    // const formData = new FormData();
-    // Object.entries(postBody).forEach(([Key, value]) => {
-    //   formData.append(Key, value);
-    // });
-
-    // await fetch(script!, {
-    //   method: "POST",
-    //   body: formData,
-    // });
+    const formData = new FormData();
+    Object.entries(postBody).forEach(([Key, value]) => {
+      formData.append(Key, value);
+    });
 
     await fetch(script!, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(postBody),
+      body: formData,
     });
 
     return NextResponse.json({ success: true });
