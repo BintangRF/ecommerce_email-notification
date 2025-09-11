@@ -12,18 +12,8 @@ export async function POST(req: NextRequest) {
     custom_field1,
     custom_field2,
     custom_field3,
-    custom_field4,
     va_numbers,
   } = body;
-
-  let item_details: any[] = [];
-  try {
-    if (custom_field3) {
-      item_details = JSON.parse(custom_field3);
-    }
-  } catch (err) {
-    console.error("Failed to parse custom_field3:", err);
-  }
 
   try {
     const transporter = nodemailer.createTransport({
@@ -40,10 +30,7 @@ export async function POST(req: NextRequest) {
       to: process.env.GMAIL_ACCOUNT,
       replyTo: custom_field1,
       subject: `Pesanan Baru #${order_id}`,
-      text: `Ada pesanan baru dari: ${custom_field2} (${custom_field1})
-              Alamat: ${custom_field4}
-              Status: ${transaction_status}
-              Total: Rp ${gross_amount}`,
+      text: `Ada pesanan baru dari: ${custom_field2} (${custom_field1}),\n\nAlamat: ${custom_field3},\n\nStatus: ${transaction_status}\nTotal: Rp ${gross_amount}`,
     });
 
     // --- Email ke PEMBELI (hanya ketika settlement) ---
@@ -72,8 +59,7 @@ export async function POST(req: NextRequest) {
           order_id: (order_id ?? "").toString().trim(),
           username: (custom_field2 ?? "").trim(),
           email: (custom_field1 ?? "").trim(),
-          address: (custom_field4 ?? "").trim(), // alamat pengiriman
-          products: JSON.stringify(item_details),
+          address: (custom_field3 ?? "").trim(),
           gross_amount: (gross_amount ?? "").toString(),
           payment_type: payment_type ?? "",
           bank: va_numbers?.[0]?.bank ?? "",
