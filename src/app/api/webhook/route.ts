@@ -12,6 +12,12 @@ export async function POST(req: NextRequest) {
     custom_field1,
     custom_field2,
     custom_field3,
+    va_numbers,
+    bill_key,
+    biller_code,
+    store,
+    payment_code,
+    actions,
   } = body;
 
   let item_details: any[] = [];
@@ -47,18 +53,18 @@ export async function POST(req: NextRequest) {
       if (payment_type === "bank_transfer") {
         paymentInfo =
           "Silahkan transfer ke Virtual Account berikut: \n" +
-          body.va_numbers
+          (va_numbers || [])
             .map((va: any) => `Bank ${va.bank.toUpperCase()}: ${va.va_number}`)
             .join("\n");
       } else if (payment_type === "echannel") {
-        paymentInfo = `Kode Bill: ${body.bill_key} \nKode Company: ${body.biller_code}`;
+        paymentInfo = `Kode Bill: ${bill_key} \nKode Company: ${biller_code}`;
       } else if (payment_type === "gopay" || payment_type === "shopeepay") {
-        const deeplink = body.actions?.find(
+        const deeplink = (actions || []).find(
           (a: any) => a.name === "deeplink-redirect"
         );
         paymentInfo = `Lanjutkan pembayaran melalui link berikut:\n${deeplink?.url}`;
       } else if (payment_type === "cstore") {
-        paymentInfo = `Kode pembayaran di ${body.store}: ${body.payment_code}`;
+        paymentInfo = `Kode pembayaran di ${store}: ${payment_code}`;
       }
     }
 
@@ -93,29 +99,42 @@ export async function POST(req: NextRequest) {
         `\n\nDaftar Item:\n${itemText}\n\nTerima kasih sudah belanja!`,
     });
 
-    // Post ke Spreadsheet
-    const script = process.env.NEXT_PUBLIC_SPREADSHEET_SCRIPT_URL;
+    // POST KE SPREADSHEET - TETAP JALANKAN
+    const scriptUrl = process.env.NEXT_PUBLIC_SPREADSHEET_SCRIPT_URL;
 
-    const postBody = {
-      order_id: (order_id ?? "").toString().trim(),
-      username: (custom_field2 ?? "").trim(),
-      email: (custom_field1 ?? "").trim(),
-      products: JSON.stringify(item_details),
-      gross_amount: (gross_amount ?? "").toString(),
-      payment_type: payment_type ?? "",
-      status: transaction_status ?? "",
-    };
+    if (scriptUrl) {
+      try {
+        const postBody = {
+          order_id: (order_id ?? "").toString().trim(),
+          username: (custom_field2 ?? "").trim(),
+          email: (custom_field1 ?? "").trim(),
+          products: JSON.stringify(item_details),
+          gross_amount: (gross_amount ?? "").toString(),
+          payment_type: payment_type ?? "",
+          status: transaction_status ?? "",
+        };
 
-    await fetch(script!, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(postBody),
-    });
+        // Kirim sebagai FormData
+        const formData = new FormData();
+        Object.entries(postBody).forEach(([key, value]) => {
+          formData.append(key, value.toString());
+        });
+
+        const response = await fetch(scriptUrl, {
+          method: "POST",
+          body: formData,
+        });
+
+        const result = await response.text();
+        console.log("Spreadsheet response:", result);
+      } catch (spreadsheetError) {
+        console.error("Error sending to spreadsheet:", spreadsheetError);
+      }
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    console.error("Error in webhook:", error);
     return NextResponse.json({ success: false, error }, { status: 500 });
   }
 }
