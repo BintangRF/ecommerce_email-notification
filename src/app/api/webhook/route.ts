@@ -106,14 +106,12 @@ export async function POST(req: NextRequest) {
       status: transaction_status ?? "",
     };
 
-    const formData = new FormData();
-    Object.entries(postBody).forEach(([Key, value]) => {
-      formData.append(Key, value);
-    });
-
     await fetch(script!, {
       method: "POST",
-      body: formData,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(postBody),
     });
 
     return NextResponse.json({ success: true });
