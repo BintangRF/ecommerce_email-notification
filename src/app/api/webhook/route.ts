@@ -97,11 +97,11 @@ export async function POST(req: NextRequest) {
     const script = process.env.NEXT_PUBLIC_SPREADSHEET_SCRIPT_URL;
 
     const postBody = {
-      order_id: order_id?.toString() ?? "",
-      username: custom_field2 ?? "",
-      email: custom_field1 ?? "",
+      order_id: (order_id ?? "").toString().trim(),
+      username: (custom_field2 ?? "").trim(),
+      email: (custom_field1 ?? "").trim(),
       products: JSON.stringify(item_details),
-      gross_amount: gross_amount?.toString() ?? "",
+      gross_amount: (gross_amount ?? "").toString(),
       payment_type: payment_type ?? "",
       status: transaction_status ?? "",
     };
