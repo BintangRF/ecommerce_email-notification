@@ -93,6 +93,20 @@ export async function POST(req: NextRequest) {
         `\n\nDaftar Item:\n${itemText}\n\nTerima kasih sudah belanja!`,
     });
 
+    // Post ke Spreadsheet
+    const script = process.env.NEXT_PUBLIC_SPREADSHEET_SCRIPT_URL;
+    await fetch(script!, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username: custom_field1,
+        email: custom_field2,
+        products: custom_field3,
+        payment_type,
+        status: transaction_status,
+      }),
+    });
+
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ success: false, error }, { status: 500 });

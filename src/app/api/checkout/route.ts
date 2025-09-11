@@ -1,18 +1,39 @@
 import { NextResponse } from "next/server";
 import midtransClient from "midtrans-client";
 import { v4 as uuidv4 } from "uuid";
-import items from "@/data/items.json";
+import axios from "axios";
+import Papa from "papaparse";
+
+type ProductProps = {
+  id: string;
+  name: string;
+  price: number;
+};
 
 export async function POST(req: Request) {
   try {
     const link = process.env.NEXT_PUBLIC_BASE_URL;
     const body = await req.json();
 
+    const linkProducts = `${
+      process.env.NEXT_PUBLIC_SPREADSHEET_URL
+    }&t=${Date.now()}`;
+
+    const res = await axios.get(linkProducts!);
+    const parsed = Papa.parse(res.data, { header: true });
+    const products: ProductProps[] = (parsed.data as any[])
+      .filter((row: any) => row.id && row.name && row.price)
+      .map((row: any) => ({
+        id: String(row.id),
+        name: String(row.name),
+        price: Number(row.price),
+      }));
+
     // hitung total
     let gross_amount = 0;
     const item_details = body.items.map(
       (cartItem: { id: number; quantity: number }) => {
-        const product = items.find((p: any) => p.id === cartItem.id);
+        const product = products.find((p: any) => p.id === cartItem.id);
 
         if (!product)
           throw new Error(`Product dengan id ${cartItem.id} tidak ada`);
