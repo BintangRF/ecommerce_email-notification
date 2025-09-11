@@ -15,6 +15,7 @@ export async function POST(req: Request) {
     const link = process.env.NEXT_PUBLIC_BASE_URL;
     const body = await req.json();
 
+    // ambil data produk yang tersedia
     const linkProducts = `${
       process.env.NEXT_PUBLIC_SPREADSHEET_URL
     }&t=${Date.now()}`;
@@ -31,6 +32,9 @@ export async function POST(req: Request) {
 
     // hitung total
     let gross_amount = 0;
+
+    // karena body.items hanya mengembalikan id dan qtty maka kita harus sesuaikan
+    // agar produk yang ada sesuai dengan id dan qtty yang dibutuhkan
     const item_details = body.items.map(
       (cartItem: { id: number; quantity: number }) => {
         const product = products.find((p: any) => p.id === cartItem.id);
