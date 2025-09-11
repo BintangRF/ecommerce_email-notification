@@ -97,23 +97,24 @@ export async function POST(req: NextRequest) {
     const script = process.env.NEXT_PUBLIC_SPREADSHEET_SCRIPT_URL;
 
     const postBody = {
-      order_id,
-      username: custom_field2,
-      email: custom_field1,
-      products: custom_field3,
-      gross_amount,
-      payment_type,
-      status: transaction_status,
+      order_id: order_id?.toString() ?? "",
+      username: custom_field2 ?? "",
+      email: custom_field1 ?? "",
+      products: JSON.stringify(item_details),
+      gross_amount: gross_amount?.toString() ?? "",
+      payment_type: payment_type ?? "",
+      status: transaction_status ?? "",
     };
 
-    const res = await fetch(script!, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(postBody),
+    const formData = new FormData();
+    Object.entries(postBody).forEach(([Key, value]) => {
+      formData.append(Key, value);
     });
 
-    const text = await res.text();
-    console.log("Google Script response:", text);
+    await fetch(script!, {
+      method: "POST",
+      body: formData,
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {
