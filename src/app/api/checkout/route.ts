@@ -81,10 +81,14 @@ export async function POST(req: Request) {
         error: `${link}/payment-notification`,
         pending: `${link}/payment-notification`,
       },
-      custom_field1: body.email,
-      custom_field2: body.username,
-      custom_field3: body.address,
       finish_redirect_url: `${link}/payment-notification`,
+
+      metadata: {
+        username: body.username,
+        email: body.email,
+        address: body.address,
+        products: body.items,
+      },
     };
 
     const transaction = await snap.createTransaction(parameter);

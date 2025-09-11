@@ -9,11 +9,11 @@ export async function POST(req: NextRequest) {
     transaction_status,
     gross_amount,
     payment_type,
-    custom_field1,
-    custom_field2,
-    custom_field3,
+    metadata,
     va_numbers,
   } = body;
+
+  const { email, username, address, products } = metadata ?? {};
 
   try {
     const transporter = nodemailer.createTransport({
@@ -26,17 +26,17 @@ export async function POST(req: NextRequest) {
 
     // --- Email ke ADMIN (selalu terkirim agar admin tahu ada transaksi baru) ---
     await transporter.sendMail({
-      from: custom_field1,
+      from: email,
       to: process.env.GMAIL_ACCOUNT,
-      replyTo: custom_field1,
+      replyTo: email,
       subject: `Pesanan Baru #${order_id}`,
-      text: `Ada pesanan baru dari: ${custom_field2} (${custom_field1}),\n\nAlamat: ${custom_field3},\n\nStatus: ${transaction_status}\nTotal: Rp ${gross_amount}`,
+      text: `Ada pesanan baru dari: ${username} (${email}),\n\nAlamat: ${address},\n\nStatus: ${transaction_status}\nTotal: Rp ${gross_amount}`,
     });
 
     // --- Email ke PEMBELI (hanya ketika settlement) ---
     if (transaction_status === "settlement") {
       const buyerMessage =
-        `Halo ${custom_field2},\n\n` +
+        `Halo ${username},\n\n` +
         `Terima kasih! Pembayaran kamu untuk pesanan #${order_id} sudah **BERHASIL** kami terima ✅.\n\n` +
         `Total: Rp${gross_amount}\n\n` +
         `Pesananmu segera kami proses. Mohon ditunggu ya 🙏\n\n` +
@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
 
       await transporter.sendMail({
         from: process.env.GMAIL_ACCOUNT,
-        to: custom_field1,
+        to: email,
         subject: `Pembayaran Berhasil - Pesanan #${order_id}`,
         text: buyerMessage,
       });
@@ -57,9 +57,9 @@ export async function POST(req: NextRequest) {
       try {
         const postBody = {
           order_id: (order_id ?? "").toString().trim(),
-          username: (custom_field2 ?? "").trim(),
-          email: (custom_field1 ?? "").trim(),
-          address: (custom_field3 ?? "").trim(),
+          username: (username ?? "").trim(),
+          email: (email ?? "").trim(),
+          address: (address ?? "").trim(),
           gross_amount: (gross_amount ?? "").toString(),
           payment_type: payment_type ?? "",
           bank: va_numbers?.[0]?.bank ?? "",
