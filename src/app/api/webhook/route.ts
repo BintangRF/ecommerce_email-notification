@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
+type ProductProps = {
+  id: string;
+  name: string;
+  price: number;
+};
+
 export async function POST(req: NextRequest) {
   const body = await req.json();
 
@@ -24,16 +30,32 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // --- Email ke ADMIN (selalu terkirim agar admin tahu ada transaksi baru) ---
+    // --- Format products jadi string list ---
+    let productList = "Tidak ada produk.";
+    if (products && Array.isArray(products)) {
+      productList = products
+        .map(
+          (p: ProductProps, index: number) =>
+            `${index + 1}. ${p.name} (Rp ${p.price.toLocaleString("id-ID")})`
+        )
+        .join("\n");
+    }
+
+    // --- Email ke ADMIN ---
     await transporter.sendMail({
       from: email,
       to: process.env.GMAIL_ACCOUNT,
       replyTo: email,
       subject: `Pesanan Baru #${order_id}`,
-      text: `Ada pesanan baru dari: ${username} (${email}),\n\nAlamat: ${address},\n\nStatus: ${transaction_status}\nTotal: Rp ${gross_amount}`,
+      text:
+        `Ada pesanan baru dari: ${username} (${email})\n\n` +
+        `Alamat: ${address}\n\n` +
+        `Status: ${transaction_status}\n` +
+        `Total: Rp ${gross_amount}\n\n` +
+        `Daftar Produk:\n${productList}`,
     });
 
-    // --- Email ke PEMBELI (hanya ketika settlement) ---
+    // --- Email ke PEMBELI ---
     if (transaction_status === "settlement") {
       const buyerMessage =
         `Halo ${username},\n\n` +
@@ -50,9 +72,8 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // --- POST ke Google Spreadsheet ---
+    // --- Kirim ke Spreadsheet ---
     const scriptUrl = process.env.NEXT_PUBLIC_SPREADSHEET_SCRIPT_URL;
-
     if (scriptUrl) {
       try {
         const postBody = {

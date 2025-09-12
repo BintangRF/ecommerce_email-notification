@@ -9,18 +9,19 @@ export default function PaymentNotification() {
   const orderId = searchParams.get("order_id");
 
   let title = "Pembayaran Diproses";
-  let message = "Transaksi sedang diproses. Silakan periksa halaman transaksi.";
+  let message =
+    "Transaksi sedang diproses. Silakan cek email (Gmail) Anda untuk detail lebih lanjut.";
   let color = "text-gray-700";
 
   switch (status) {
     case "settlement":
       title = "Pembayaran Berhasil 🎉";
-      message = `Transaksi dengan ID ${orderId} berhasil diproses.`;
+      message = `Transaksi dengan ID ${orderId} berhasil diproses. Silakan periksa Gmail Anda untuk konfirmasi pembayaran.`;
       color = "text-green-600";
       break;
     case "pending":
       title = "Pembayaran Pending ⏳";
-      message = `Transaksi dengan ID ${orderId} masih menunggu pembayaran.`;
+      message = `Transaksi dengan ID ${orderId} masih menunggu pembayaran. Silakan cek Gmail Anda untuk instruksi pembayaran.`;
       color = "text-yellow-600";
       break;
     case "deny":
@@ -28,7 +29,7 @@ export default function PaymentNotification() {
     case "expire":
     case "failure":
       title = "Pembayaran Gagal ❌";
-      message = `Transaksi dengan ID ${orderId} gagal diproses.`;
+      message = `Transaksi dengan ID ${orderId} gagal diproses. Silakan cek Gmail Anda untuk informasi lebih lanjut.`;
       color = "text-red-600";
       break;
   }
