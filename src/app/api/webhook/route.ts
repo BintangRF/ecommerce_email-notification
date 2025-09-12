@@ -5,6 +5,7 @@ type ProductProps = {
   id: string;
   name: string;
   price: number;
+  quantity: number;
 };
 
 export async function POST(req: NextRequest) {
@@ -34,10 +35,14 @@ export async function POST(req: NextRequest) {
     let productList = "Tidak ada produk.";
     if (products && Array.isArray(products)) {
       productList = products
-        .map(
-          (p: ProductProps, index: number) =>
-            `${index + 1}. ${p.name} (Rp ${p.price.toLocaleString("id-ID")})`
-        )
+        .map((p: ProductProps, index: number) => {
+          const subtotal = p.price * p.quantity;
+          return (
+            `${index + 1}. ${p.name} x${p.quantity} ` +
+            `(Rp ${p.price.toLocaleString("id-ID")} /pcs) ` +
+            `= Rp ${subtotal.toLocaleString("id-ID")}`
+          );
+        })
         .join("\n");
     }
 
@@ -51,7 +56,7 @@ export async function POST(req: NextRequest) {
         `Ada pesanan baru dari: ${username} (${email})\n\n` +
         `Alamat: ${address}\n\n` +
         `Status: ${transaction_status}\n` +
-        `Total: Rp ${gross_amount}\n\n` +
+        `Total: Rp ${Number(gross_amount).toLocaleString("id-ID")}\n\n` +
         `Daftar Produk:\n${productList}`,
     });
 
@@ -60,7 +65,7 @@ export async function POST(req: NextRequest) {
       const buyerMessage =
         `Halo ${username},\n\n` +
         `Terima kasih! Pembayaran kamu untuk pesanan #${order_id} sudah **BERHASIL** kami terima ✅.\n\n` +
-        `Total: Rp${gross_amount}\n\n` +
+        `Total: Rp${Number(gross_amount).toLocaleString("id-ID")}\n\n` +
         `Pesananmu segera kami proses. Mohon ditunggu ya 🙏\n\n` +
         `Salam hangat,\nTim Toko`;
 
