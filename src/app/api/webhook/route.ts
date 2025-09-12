@@ -31,18 +31,14 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // --- Format products jadi string list ---
+    // --- Format products jadi string list (nama + quantity) ---
     let productList = "Tidak ada produk.";
     if (products && Array.isArray(products)) {
       productList = products
-        .map((p: ProductProps, index: number) => {
-          const subtotal = p.price * p.quantity;
-          return (
-            `${index + 1}. ${p.name} x${p.quantity} ` +
-            `(Rp ${p.price.toLocaleString("id-ID")} /pcs) ` +
-            `= Rp ${subtotal.toLocaleString("id-ID")}`
-          );
-        })
+        .map(
+          (p: ProductProps, index: number) =>
+            `${index + 1}. ${p.name} x${p.quantity}`
+        )
         .join("\n");
     }
 
@@ -53,11 +49,20 @@ export async function POST(req: NextRequest) {
       replyTo: email,
       subject: `Pesanan Baru #${order_id}`,
       text:
-        `Ada pesanan baru dari: ${username} (${email})\n\n` +
-        `Alamat: ${address}\n\n` +
-        `Status: ${transaction_status}\n` +
-        `Total: Rp ${Number(gross_amount).toLocaleString("id-ID")}\n\n` +
-        `Daftar Produk:\n${productList}`,
+        `Halo Admin,\n\n` +
+        `Ada pesanan baru yang perlu diproses.\n\n` +
+        `Detail Pemesan:\n` +
+        `Nama    : ${username}\n` +
+        `Email   : ${email}\n` +
+        `Alamat  : ${address}\n\n` +
+        `Status Transaksi : ${transaction_status}\n` +
+        `Total Pembayaran : Rp ${Number(gross_amount).toLocaleString(
+          "id-ID"
+        )}\n\n` +
+        `Daftar Produk (harap disiapkan untuk pengiriman):\n${productList}\n\n` +
+        `Segera lakukan persiapan barang agar pesanan dapat dikirim tepat waktu.\n\n` +
+        `Terima kasih.\n\n` +
+        `-- Sistem Otomatis Toko`,
     });
 
     // --- Email ke PEMBELI ---
