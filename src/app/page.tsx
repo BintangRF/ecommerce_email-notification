@@ -22,6 +22,8 @@ export default function Home() {
           quantity: Number(row.quantity) || 0,
         }));
     },
+    staleTime: 0, // data langsung dianggap usang → refetch saat mount
+    refetchOnWindowFocus: true, // refetch tiap window/tab fokus
   });
 
   if (isLoading) return <p>Loading...</p>;
