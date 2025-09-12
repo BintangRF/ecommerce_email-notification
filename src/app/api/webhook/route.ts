@@ -43,6 +43,29 @@ export async function POST(req: NextRequest) {
     }
 
     // --- Email ke ADMIN ---
+    let adminMessageHeader = "";
+    switch (transaction_status) {
+      case "settlement":
+        adminMessageHeader =
+          "Pesanan sudah dibayar ✅. Silakan mulai persiapan pengiriman.";
+        break;
+      case "pending":
+        adminMessageHeader =
+          "Pesanan belum dibayar ⏳. Jangan kirim dulu, tunggu pembayaran.";
+        break;
+      case "cancel":
+      case "expire":
+      case "deny":
+      case "failure":
+        adminMessageHeader =
+          "Transaksi gagal ❌. Tidak perlu menyiapkan barang.";
+        break;
+      default:
+        adminMessageHeader =
+          "Status transaksi tidak diketahui. Mohon cek sistem.";
+        break;
+    }
+
     await transporter.sendMail({
       from: email,
       to: process.env.GMAIL_ACCOUNT,
@@ -50,7 +73,7 @@ export async function POST(req: NextRequest) {
       subject: `Pesanan Baru #${order_id}`,
       text:
         `Halo Admin,\n\n` +
-        `Ada pesanan baru yang perlu diproses.\n\n` +
+        `${adminMessageHeader}\n\n` +
         `Detail Pemesan:\n` +
         `Nama    : ${username}\n` +
         `Email   : ${email}\n` +
@@ -59,9 +82,7 @@ export async function POST(req: NextRequest) {
         `Total Pembayaran : Rp ${Number(gross_amount).toLocaleString(
           "id-ID"
         )}\n\n` +
-        `Daftar Produk (harap disiapkan untuk pengiriman):\n${productList}\n\n` +
-        `Segera lakukan persiapan barang agar pesanan dapat dikirim tepat waktu.\n\n` +
-        `Terima kasih.\n\n` +
+        `Daftar Produk:\n${productList}\n\n` +
         `-- Sistem Otomatis Toko`,
     });
 
