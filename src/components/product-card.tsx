@@ -45,11 +45,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           Rp {price.toLocaleString()}
         </p>
         {quantity > 0 ? (
-          <p className="text-custom-gray-lightest text-sm">Stok: {quantity}</p>
+          <p className="text-custom-dark text-sm">Stok: {quantity}</p>
         ) : (
-          <p className="text-custom-gray-lightest text-sm font-semibold">
-            Stok habis
-          </p>
+          <p className="text-custom-dark text-sm font-semibold">Stok habis</p>
         )}
       </div>
     </div>

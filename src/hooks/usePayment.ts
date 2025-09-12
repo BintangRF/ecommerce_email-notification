@@ -88,6 +88,7 @@ export function usePayment() {
         },
         onError: (err) => {
           console.error("Checkout error:", err);
+          alert(err?.message || "Checkout gagal, silakan coba lagi.");
         },
       }
     );

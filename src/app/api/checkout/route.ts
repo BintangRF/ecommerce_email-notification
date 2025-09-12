@@ -8,6 +8,7 @@ type ProductProps = {
   id: string;
   name: string;
   price: number;
+  quantity?: number; // tambahkan quantity untuk validasi stok
 };
 
 export async function POST(req: Request) {
@@ -28,22 +29,33 @@ export async function POST(req: Request) {
         id: String(row.id),
         name: String(row.name),
         price: Number(row.price),
+        quantity: row.quantity ? Number(row.quantity) : 0, // ambil stok
       }));
 
-    // hitung total
     let gross_amount = 0;
 
-    // karena body.items hanya mengembalikan id dan qtty maka kita harus sesuaikan
-    // agar produk yang ada sesuai dengan id dan qtty yang dibutuhkan
+    // mapping item_details dengan validasi stok
     const item_details = body.items.map(
       (cartItem: { id: number; quantity: number }) => {
-        const product = products.find((p: any) => p.id === cartItem.id);
+        const product = products.find((p: any) => p.id === String(cartItem.id));
 
-        if (!product)
+        if (!product) {
           throw new Error(`Product dengan id ${cartItem.id} tidak ada`);
+        }
+
+        if (!product.quantity || product.quantity <= 0) {
+          throw new Error(
+            `Maaf, produk "${product.name}" stoknya habis. Anda tidak bisa melakukan transaksi.`
+          );
+        }
+
+        if (cartItem.quantity > product.quantity) {
+          throw new Error(
+            `Maaf, jumlah pesanan untuk produk "${product.name}" melebihi stok tersedia (${product.quantity}).`
+          );
+        }
 
         const price = Math.round(product.price);
-
         const subTotal = price * cartItem.quantity;
         gross_amount += Math.round(subTotal);
 
@@ -86,7 +98,6 @@ export async function POST(req: Request) {
         pending: `${link}/payment-notification`,
       },
       finish_redirect_url: `${link}/payment-notification`,
-
       metadata: {
         username: body.username,
         email: body.email,
@@ -106,7 +117,7 @@ export async function POST(req: Request) {
     console.error("Checkout error: ", error);
     return NextResponse.json(
       { error: error?.message ?? "Unknown Error" },
-      { status: 500 }
+      { status: 400 }
     );
   }
 }
