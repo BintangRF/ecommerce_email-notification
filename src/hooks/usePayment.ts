@@ -86,9 +86,13 @@ export function usePayment() {
           // Buka Snap Payment
           payWithSnap(res.snapToken, res.orderId);
         },
-        onError: (err) => {
+        onError: (err: any) => {
           console.error("Checkout error:", err);
-          alert(err?.message || "Checkout gagal, silakan coba lagi.");
+          alert(
+            err?.response?.data?.error ||
+              err?.message ||
+              "Checkout gagal, silakan coba lagi."
+          );
         },
       }
     );
