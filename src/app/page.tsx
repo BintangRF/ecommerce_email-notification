@@ -19,7 +19,7 @@ export default function Home() {
           id: String(row.id),
           name: String(row.name),
           price: Number(row.price),
-          quantity: Number(row.quantity) || 0,
+          stock: Number(row.stock) || 0,
         }));
     },
     staleTime: 0, // data langsung dianggap usang → refetch saat mount
@@ -37,7 +37,7 @@ export default function Home() {
             id={p.id}
             name={p.name}
             price={p.price}
-            quantity={p.quantity}
+            stock={p.stock}
           />
         </div>
       ))}

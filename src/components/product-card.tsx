@@ -7,19 +7,19 @@ type ProductCardProps = {
   id: number;
   name: string;
   price: number;
-  quantity: number;
+  stock: number;
 };
 
 export const ProductCard: React.FC<ProductCardProps> = ({
   id,
   name,
   price,
-  quantity,
+  stock,
 }) => {
   const addCart = useStore((s) => s.addToCart);
 
   const handleClick = () => {
-    if (quantity > 0) {
+    if (stock > 0) {
       addCart({ id, name, price, quantity: 1 });
     }
   };
@@ -34,7 +34,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         bg-custom-light
         transition-shadow duration-300
         flex flex-col justify-between mx-auto
-        ${quantity === 0 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+        ${stock === 0 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
       `}
     >
       <div className="mb-4">
@@ -44,8 +44,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         <p className="text-custom-gray-medium text-sm mb-2">
           Rp {price.toLocaleString()}
         </p>
-        {quantity > 0 ? (
-          <p className="text-custom-dark text-sm">Stok: {quantity}</p>
+        {stock > 0 ? (
+          <p className="text-custom-dark text-sm">Stok: {stock}</p>
         ) : (
           <p className="text-custom-dark text-sm font-semibold">Stok habis</p>
         )}

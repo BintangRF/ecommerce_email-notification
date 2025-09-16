@@ -8,7 +8,8 @@ type ProductProps = {
   id: string;
   name: string;
   price: number;
-  quantity?: number; // tambahkan quantity untuk validasi stok
+  quantity?: number; // quantity untuk cart
+  stock?: number; // stock untuk stock produk yang tersedia
 };
 
 export async function POST(req: Request) {
@@ -29,7 +30,7 @@ export async function POST(req: Request) {
         id: String(row.id),
         name: String(row.name),
         price: Number(row.price),
-        quantity: row.quantity ? Number(row.quantity) : 0, // ambil stok
+        stock: row.stock ? Number(row.stock) : 0,
       }));
 
     let gross_amount = 0;
@@ -45,15 +46,15 @@ export async function POST(req: Request) {
           throw new Error(`Product dengan id ${cartItem.id} tidak ada`);
         }
 
-        if (!product.quantity || product.quantity <= 0) {
+        if (!product.stock || product.stock <= 0) {
           throw new Error(
             `Maaf, produk "${product.name}" stoknya habis. Anda tidak bisa melakukan transaksi.`
           );
         }
 
-        if (cartItem.quantity > product.quantity) {
+        if (cartItem.quantity > product.stock) {
           throw new Error(
-            `Maaf, jumlah pesanan untuk produk "${product.name}" melebihi stok tersedia (${product.quantity}).`
+            `Maaf, jumlah pesanan untuk produk "${product.name}" melebihi stok tersedia (${product.stock}).`
           );
         }
 
