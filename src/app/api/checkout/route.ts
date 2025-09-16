@@ -23,9 +23,9 @@ export async function POST(req: Request) {
 
     const res = await axios.get(linkProducts!);
     const parsed = Papa.parse(res.data, { header: true });
-    const products: ProductProps[] = (parsed.data as any[])
-      .filter((row: any) => row.id && row.name && row.price)
-      .map((row: any) => ({
+    const products: ProductProps[] = (parsed.data as ProductProps[])
+      .filter((row: ProductProps) => row.id && row.name && row.price)
+      .map((row: ProductProps) => ({
         id: String(row.id),
         name: String(row.name),
         price: Number(row.price),
@@ -37,7 +37,9 @@ export async function POST(req: Request) {
     // mapping item_details dengan validasi stok
     const item_details = body.items.map(
       (cartItem: { id: number; quantity: number }) => {
-        const product = products.find((p: any) => p.id === String(cartItem.id));
+        const product = products.find(
+          (p: ProductProps) => p.id === String(cartItem.id)
+        );
 
         if (!product) {
           throw new Error(`Product dengan id ${cartItem.id} tidak ada`);
