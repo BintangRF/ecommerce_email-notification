@@ -118,6 +118,9 @@ export async function POST(req: Request) {
     });
   } catch (error: any) {
     console.error("Checkout error: ", error);
+    console.error("DETAIL:", error?.cause);
+    console.error(JSON.stringify(error, null, 2));
+
     return NextResponse.json(
       { error: error?.message ?? "Unknown Error" },
       { status: 400 }
